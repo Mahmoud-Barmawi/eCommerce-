@@ -3,7 +3,7 @@ import categoryModle from "../../../../DB/models/category.model.js";
 import cloudinary from '../../../services/cloudinary.js'
 
 export const getCategories = async(req, res) => {
-    const category=await categoryModle.find()
+    const category=await categoryModle.find().populate('subCategory')
     return res.json({message:"success",category});
 
 }

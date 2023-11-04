@@ -2,6 +2,8 @@ import { Router } from "express";
 const router = Router()
 import * as categoriesController from './controller/categories.controller.js'
 import fileUpload, { fileValidation } from '../../services/multer.js'
+import subCategoriesRouter from '../subCategory/subCategories.router.js'
+router.use('/:id/subcategory',subCategoriesRouter)
 router.get('/', categoriesController.getCategories)
 router.get('/active', categoriesController.getActiveCategories)
 router.get('/:id', categoriesController.getSpicificCategories)
