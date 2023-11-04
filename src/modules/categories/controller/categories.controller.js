@@ -9,7 +9,8 @@ export const getCategories = async(req, res) => {
 }
 export const getSpicificCategories = async(req, res) => {
     const {id}=  req.params;
-    return res.json({message:"success",id});
+    const cat=await categoryModle.findById(id);
+    return res.json({message:"success",cat});
 
 }
 export const createCategory = async (req, res) => {
