@@ -27,8 +27,6 @@ export const signIn=async(req,res)=>{
     if(!match){
         return res.status(409).json({message:"Data Invalid"})
     }
-    const token=jwt.sign({id:user._id,role:user.role,status:user.status},process.env.LOGINSCret,{
-        expiresIn:"5m"
-    });
+    const token=jwt.sign({id:user._id,role:user.role,status:user.status},process.env.LOGINSCret);
     return res.status(201).json({Message:"Success",token});
 } 
