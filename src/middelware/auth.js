@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import userModle from "../../DB/models/user.model.js";
-export const auht = () => {
+export const auht = (accessRoles = []) => {
     return async (req, res, next) => {
         const { authorization } = req.headers;
         if (!authorization?.startsWith(process.env.BEARERKEY)) {
@@ -12,12 +12,13 @@ export const auht = () => {
             return res.status(400).json({ message: "Invalid authorization" })
         }
         const user = await userModle.findById(decodedToken.id).select('userName role');
-        if(!user){
+        if (!user) {
             return res.status(400).json({ message: "Not registered user" })
         }
-        if(user.role=='User'){
-            return res.status(400).json({ message: "Not Auth User" })
+        if (!accessRoles.includes(user.role)) {
+            return res.status(400).json({ message: "Not Auth user" })
         }
+        req.user = user;
         next();
     }
 }

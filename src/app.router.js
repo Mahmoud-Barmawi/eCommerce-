@@ -4,6 +4,7 @@ import subCategoriesRouter from './modules/subCategory/subCategories.router.js'
 import productsRouter from './modules/products/products.router.js'
 import authRouter from './modules/auth/auth.router.js'
 import couponRouter from './modules/coupon/coupon.router.js'
+import { sendEmail } from './services/email.js'
 const initApp = (app, express) => {
     app.use(express.json())
     connectDB()
