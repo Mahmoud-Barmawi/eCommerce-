@@ -4,7 +4,7 @@ import subCategoriesRouter from './modules/subCategory/subCategories.router.js'
 import productsRouter from './modules/products/products.router.js'
 import authRouter from './modules/auth/auth.router.js'
 import couponRouter from './modules/coupon/coupon.router.js'
-import { sendEmail } from './services/email.js'
+import cartRouter from './modules/cart/cart.router.js'
 const initApp = (app, express) => {
     app.use(express.json())
     connectDB()
@@ -16,6 +16,7 @@ const initApp = (app, express) => {
     app.use('/products', productsRouter)
     app.use('/subCategories', subCategoriesRouter)
     app.use('/coupon', couponRouter)
+    app.use('/cart',cartRouter)
     app.get('*', (req, res) => {
         return res.status(200).json("Page Not Found...")
     })
