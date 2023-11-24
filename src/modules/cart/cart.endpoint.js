@@ -5,5 +5,4 @@ export const endPoint={
     delete:[roles.User],
     clear:[roles.User],
     get:[roles.User]
-
 }

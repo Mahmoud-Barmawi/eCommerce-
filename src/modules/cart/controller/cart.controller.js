@@ -45,6 +45,6 @@ export const removeItems = async (req, res) => {
 }
 
 export const getCart = async (req, res) => {
-    const cart=await cartModle.findOne({userId:req.user._id})
-    return res.json({message:"Success",cart})
+    const cart = await cartModle.findOne({ userId: req.user._id })
+    return res.json({ message: "Success", cart })
 }

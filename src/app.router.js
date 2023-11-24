@@ -2,7 +2,7 @@ import connectDB from '../DB/connection.js'
 import categoriesRouter from './modules/categories/categories.router.js'
 import subCategoriesRouter from './modules/subCategory/subCategories.router.js'
 import productsRouter from './modules/products/products.router.js'
-import authRouter from './modules/auth/auth.router.js'
+import authRouter from './modules/auth/auth.router.js'  
 import couponRouter from './modules/coupon/coupon.router.js'
 import cartRouter from './modules/cart/cart.router.js'
 const initApp = (app, express) => {
