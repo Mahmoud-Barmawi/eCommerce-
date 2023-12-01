@@ -5,13 +5,14 @@ import jwt from "jsonwebtoken";
 import { customAlphabet, nanoid } from "nanoid";
 import { sendEmail } from "../../../services/email.js";
 
-export const signUp = async (req, res) => {
+export const signUp = async (req, res, next) => {
     const { userName, email, password } = req.body;
 
     const user = await userModle.findOne({ email });
 
     if (user) {
-        return res.status(409).json({ message: "Email alrady exist" })
+        //return res.status(409).json({ message: "Email alrady exist" });
+        return next(new Error("Email alrady exist"));
     }
 
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
@@ -47,6 +48,9 @@ export const signIn = async (req, res) => {
     if (!user) {
         return res.status(409).json({ message: "Data Invalid" })
     }
+    if (!user.confirmEmail) {
+        return res.status(409).json({ message: "Plz Confirrm your email" })
+    }
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
         return res.status(409).json({ message: "Data Invalid" })
@@ -64,22 +68,28 @@ export const sendCode = async (req, res) => {
     await sendEmail(email, "reset password", html)
     return res.redirect(process.env.PAGE)
 }
+
 export const forgotPssword = async (req, res) => {
     const { email, password, code } = req.body;
     const user = await userModle.findOne({ email });
     if (!user) {
         return res.json({ message: "not register user" });
     }
-    if(user.sendCode != code){
-        return res.json({message:"Invalid code"});
+    if (user.sendCode != code) {
+        return res.json({ message: "Invalid code" });
     }
-    let match=await bcrypt.compare(password,user.password)
-    if(match){
-        return res.json({message:"same password"})
+    let match = await bcrypt.compare(password, user.password)
+    if (match) {
+        return res.json({ message: "same password" })
     }
-    user.password=await bcrypt.hash(password,parseInt(process.env.SALT_ROUND))
-    user.sendCode=null;
+    user.password = await bcrypt.hash(password, parseInt(process.env.SALT_ROUND))
+    user.sendCode = null;
     await user.save();
-    return res.json({message:"success"});
+    return res.json({ message: "success" });
 
+}
+
+export const deleteInvalidConfirm = async (req, res) => {
+    const user = await userModle.deleteMany({ confirmEmail: false });
+    return res.json({ message: "Success" });
 }
