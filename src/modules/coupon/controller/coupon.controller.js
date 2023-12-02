@@ -1,7 +1,7 @@
 import couponModle from "../../../../DB/models/coupon.model.js";
 
 export const createCoupon = async (req, res) => {
-    const { name, amount } = req.body;
+    const { name } = req.body;
     const coupon = await couponModle.findOne({ name });
     if (coupon) {
         return res.json({ Message: "coupon name already exists" })

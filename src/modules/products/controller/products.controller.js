@@ -9,7 +9,7 @@ export const getProducts = (req, res) => {
 }
 
 export const createProduct = async (req, res) => {
-    const { name, discount, price, category, subCategory, } = req.body;
+    const { name, disCount, price, category, subCategory, } = req.body;
     const checkCategory = await categoryModle.findById(category);
     if (!checkCategory) {
         return res.json({ message: "category not found" })
@@ -21,12 +21,12 @@ export const createProduct = async (req, res) => {
 
     req.body.slug = slugify(name);
 
-    req.body.finalPrice = price - ((price * (discount || 0)) / 100);
+    req.body.finalPrice = price - ((price * (disCount || 0)) / 100).toFixed(2);
 
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.files.mainImage[0].path,
         { folder: `${process.env.APP_NAME}/product/mainImages` });
     req.body.mainImage = { secure_url, public_id };
-    
+
     req.body.subImages=[];
     for (const iterator of req.files.subImages) {
         const { secure_url, public_id } = await cloudinary.uploader.upload(iterator.path,
@@ -41,4 +41,13 @@ export const createProduct = async (req, res) => {
     }
 
     return res.json({message:"Success",product});
+}
+
+export const getProductWithCategory= async(req,res)=>{
+    const product=await productModle.find({category:req.params.categoryId});
+    return res.json({message:"success",product})
+}
+export const getProductDetails=async(req,res)=>{
+    const product=await productModle.findById(req.params.productId);
+    return res.json({message:"success",product})
 }
