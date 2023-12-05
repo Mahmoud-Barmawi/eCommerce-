@@ -37,10 +37,6 @@ const orderSchema = new Schema({
     },
     reasonRejcted:String,
     note:String,
-    category: { type: Types.ObjectId, ref: 'Category', required: true },
-    subCategory: { type: Types.ObjectId, ref: 'Subcategorya', required: true },
-    createdBy: { type: Types.ObjectId, ref: 'User', required: true },
-    updatedBy: { type: Types.ObjectId, ref: 'User', required: true },
 
 }, {
     timestamps: true,

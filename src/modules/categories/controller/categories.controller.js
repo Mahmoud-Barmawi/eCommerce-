@@ -1,17 +1,23 @@
 import slugify from "slugify";
 import categoryModle from "../../../../DB/models/category.model.js";
 import cloudinary from '../../../services/cloudinary.js'
+import { pagination } from "../../../services/pagination.js";
+import productModle from "../../../../DB/models/product.model.js";
+import subCategoryModle from "../../../../DB/models/sub_category.model.js";
 
 export const getCategories = async (req, res) => {
+
     const category = await categoryModle.find().populate('subCategory')
     return res.json({ message: "success", category });
 
 }
-export const getSpicificCategories = async (req, res) => {
+export const getSpicificCategories = async (req, res, next) => {
     const { id } = req.params;
     const cat = await categoryModle.findById(id);
+    if (!cat) {
+        return next(new Error(`category not found`))
+    }
     return res.json({ message: "success", cat });
-
 }
 export const createCategory = async (req, res) => {
     const name = req.body.name.toLowerCase();
@@ -35,7 +41,7 @@ export const updateCategories = async (req, res) => {
         return res.json({ message: `invalid category id" ${req.params.id}` })
     }
     if (req.body.name) {
-        if (await categoryModle.findOne({ name: req.body.name }).select('name')) {
+        if (await categoryModle.findOne({ name: req.body.name, _id: { $ne: cat._id } }).select('name')) {
             return res.json({ Message: `category ${req.body.name} already exist` })
         }
         cat.name = req.body.name
@@ -56,7 +62,19 @@ export const updateCategories = async (req, res) => {
 }
 
 export const getActiveCategories = async (req, res) => {
-    const cat = await categoryModle.find({ status: 'Active' }).select('name image')
+    const { skip, limit } = pagination(req.query.page, req.query.limit);
+    const cat = await categoryModle.find({ status: 'Active' }).skip(skip).limit(limit).select('name image')
     return res.json({ message: "success", cat })
 
 }
+
+export const deleteCategories = async (req, res, next) => {
+    const { id } = req.params;
+    const category = await categoryModle.findByIdAndDelete(id);
+    if(!category){
+        return next(new Error(`category  not found`));
+    }
+    await productModle.deleteMany({category:id});
+    await subCategoryModle.deleteMany({categoryId:id});
+    return res.json({message:"Success"})
+}   

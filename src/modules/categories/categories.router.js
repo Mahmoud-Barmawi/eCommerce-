@@ -9,9 +9,10 @@ import { validtion } from "../../middelware/validation.js";
 import * as validators from "./categories.validation.js";
 router.use('/:id/subcategory',subCategoriesRouter)
 router.get('/', auht(Object.values(roles)),categoriesController.getCategories)
-router.get('/active', auht(endPoint.getActive),categoriesController.getActiveCategories)
-router.get('/:id', auht(endPoint.specificCategory),categoriesController.getSpicificCategories)
+router.get('/active',categoriesController.getActiveCategories)
+router.get('/:id',categoriesController.getSpicificCategories)
 router.put('/:id', auht(endPoint.updateCategory),fileUpload(fileValidation.image).single('image'), categoriesController.updateCategories)
 router.post('/', auht(endPoint.create),fileUpload(fileValidation.image).single('image'), validtion(validators.createCtegory),categoriesController.createCategory)
+router.delete('/:id',categoriesController.deleteCategories)
 
 export default router   

@@ -51,6 +51,7 @@ export const createOrder = async (req, res, next) => {
         finalProducts.push(product)
     }
     const user = await userModle.findById(req.user._id)
+
     if (!req.body.address) {
         req.body.address = user.address;
     }
@@ -58,10 +59,12 @@ export const createOrder = async (req, res, next) => {
         req.body.phone = user.phone;
     }
 
+
+
     const order = await orderModle.create({
         userId: req.user._id,
         products: finalProducts,
-        finalPrice: subTotels - (subTotels * (( req.body.coupon?.amount || 0 ))/100),
+        finalPriceForAllProducts: subTotels - (( subTotels*req.body.coupon?.amount ||0) /100),
         address: req.body.address,
         phoneNumber: req.body.phone,
         couponName: req.body.couponName ?? ''
