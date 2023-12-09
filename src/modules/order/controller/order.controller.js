@@ -80,6 +80,54 @@ export const createOrder = async (req, res, next) => {
 
     return res.json({message:"success",order});
 
+}
+
+export const cancelOrder=async(req,res,next)=>{
+    const {orderId}=req.params;
+    const order=await orderModle.findOne({_id:orderId,userId:req.user._id});
+    if(!order){
+        return next(new Error(`Invalid Oreder`));
+    }
+    if(order.status!='pending'){
+        return next(new Error(`can not cancel thisOreder`));
+    }
+    req.body.status='cancelled';
+    req.body.updatedBy='req.user._id';
+    const newOrder=await orderModle.findOneAndUpdate(orderId,req.body,{new:true});
 
 
+    for (let product of order.products) {
+        await productModle.updateOne({_id:product.productId},{$inc:{$stock:product.quantity}})
+    }
+    if(req.body.coupon){
+        await couponModle.updateOne({_id:req.body.coupon._id},{$pull:{usedBy:req.user._id}})
+    }
+
+    return res.json({message:"success",newOrder});
+}
+
+export const getOrders=async(req,res,next)=>{
+    const userOrder=await orderModle({userId:req.user._id});
+    return res.json ({message:'success',userOrder});
+}
+
+
+export const changeOrderStatus= async (req,res,next)=>{
+    const {orderId}=req.params;
+    const order=await orderModle.findById(orderId);
+    if(!order) return next(new Error(`order not found`))
+
+    if(order.status=='cancelled' || order.status=='deliverd'){
+        return next(new Error(`Cant change status this order`))
+    }
+    const newOrder=await orderModle.findByIdAndUpdate(orderId,{status:req.body.status},{new:true});
+    if(req.body.status=='cancelled'){
+        for (let product of order.products) {
+            await productModle.updateOne({_id:product.productId},{$inc:{$stock:product.quantity}})
+        }
+        if(newOrder.couponName){
+            await couponModle.updateOne({name:order.couponName},{$pull:{usedBy:order.userId}})
+        }
+    } 
+    return res.json({message:"success",newOrder});
 }

@@ -23,7 +23,6 @@ const orderSchema = new Schema({
     },
     couponName:{
         type:String,
-        required:true,
     },
     paymentType:{
         type:String,
@@ -37,6 +36,8 @@ const orderSchema = new Schema({
     },
     reasonRejcted:String,
     note:String,
+    updatedBy: { type: Types.ObjectId, ref: 'User' ,required:true},
+
 
 }, {
     timestamps: true,
